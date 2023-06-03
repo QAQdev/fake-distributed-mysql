@@ -1,17 +1,16 @@
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import utils.RegionUtil;
-import utils.StatisticsUtil;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+
+import utils.CommandHeader;
+import utils.RegionUtil;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import utils.StatisticsUtil;
 
 public class ClientThread implements Runnable {
 
@@ -43,7 +42,7 @@ public class ClientThread implements Runnable {
                 String line = input.readLine();
                 if (line != null) {
                     logger.log(Level.INFO, "接收到客户端消息：" + line);
-                    execute(line);
+                    execute(line.substring(CommandHeader.CLIENT_TO_REGION_1.value.length()));
                 }
             }
         } catch (Exception e) {
@@ -73,18 +72,18 @@ public class ClientThread implements Runnable {
             // 更新访问频次
             StatisticsUtil.getInstance().update(tableName);
 
-            StringBuffer ret = new StringBuffer("<master-region>");
+            StringBuffer ret = new StringBuffer(CommandHeader.REGION_TO_CLIENT_1.value + " ");
 
             ret.append(RegionUtil.resultSetToJson(resultSet));
-            output.println(ret);
-            logger.log(Level.INFO, ret);
+            output.println(ret + "\nEND_OF_TRANSMISSION");
+            logger.log(Level.INFO, ret + "\nEND_OF_TRANSMISSION");
             logger.log(Level.INFO, "执行 sql 语句成功");
 
         } catch (SQLException se) {
             // 获取并显示错误信息
             String errorMessage = se.getMessage();
-            logger.error("<master-region>" + errorMessage);
-            output.println("<master-region>" + errorMessage);
+            logger.error(CommandHeader.REGION_TO_CLIENT_1.value + " " + errorMessage);
+            output.println(CommandHeader.REGION_TO_CLIENT_1.value + " " + errorMessage);
 
         } catch (Exception e) {
             e.printStackTrace();
