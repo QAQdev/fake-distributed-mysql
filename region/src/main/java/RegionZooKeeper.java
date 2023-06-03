@@ -2,12 +2,18 @@ import config.Config;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.log4j.*;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 
+//import lombok.extern.slf4j.Slf4j;
+
+
 import java.io.IOException;
+
+import org.apache.log4j.*;
+
+import static config.Config.*;
 
 enum Mode {
     PERMANENT, TEMPORARILY, SEQUENTIAL  //permanent  temporarily
@@ -39,11 +45,11 @@ public class RegionZooKeeper implements Runnable {
 
             // Define the znode path and data
 //            String data = "192.168.43.222:4321:1234:8082";
-            String data = Config.IP + ":" + Config.CLIENT_PORT + ":" + Config.MASTER_PORT + ":" + Config.REGION_PORT;
+            String data = IP_C_M_R;
 
             // Create the znode on the server
-            addNodeForPath(Config.PATH, Mode.PERMANENT, data);
-            logger.info(new String(client.getData().forPath(Config.PATH)));
+            addNodeForPath(PATH, Mode.TEMPORARILY, data);
+            logger.info(new String(client.getData().forPath(PATH)));
 
             synchronized (this) {
                 wait();
