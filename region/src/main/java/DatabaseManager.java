@@ -2,13 +2,15 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.util.JdbcConstants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysql.cj.jdbc.MysqlXADataSource;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utils.CacheUtil;
 import utils.RegionUtil;
+
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.sql.XAConnection;
 import java.io.IOException;
@@ -30,13 +32,13 @@ public class DatabaseManager {
 
     private Logger logger;
 
-    private final String DB_NAME = "";
+    private final String DB_NAME = "test03";
 
     private String dbUrl = "jdbc:mysql://localhost:3306/" + DB_NAME;
 
-    private String user = "";
+    private String user = "root";
 
-    private String password = "";
+    private String password = "00000000";
 
     public DatabaseManager() throws SQLException {
         logger = Logger.getLogger(DatabaseManager.class);
@@ -131,8 +133,6 @@ public class DatabaseManager {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true);
         try {
-//            Statement prep = this.connection.createStatement();
-//            prep.executeUpdate("use test03");
 
             JsonNode root = mapper.readTree(jsonStr);
             Iterator<JsonNode> records = root.elements();
