@@ -3,8 +3,7 @@ import utils.CacheUtil;
 import utils.CommandHeader;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -55,11 +54,11 @@ public class RegionSocketManager implements Runnable {
         }
     }
 
-    public Socket connectToRegion(String ip, int port) throws IOException {
+    public Socket connectToRegion(String ip) throws IOException {
         if (connectedSockets.containsKey(ip)) {
             return connectedSockets.get(ip);
         } else {
-            Socket socket = new Socket(ip, port);
+            Socket socket = new Socket(ip.split(":")[0], Integer.parseInt(ip.split(":")[1]));
             connectedSockets.put(ip, socket);
             return socket;
         }
@@ -72,7 +71,7 @@ public class RegionSocketManager implements Runnable {
     public String initiatingTableCopying(String command) {
         String[] commands = command.split(" ");
         try {
-            Socket socket = connectToRegion(commands[0], 8082);
+            Socket socket = connectToRegion(commands[0]);
             String message = CommandHeader.REGION_TO_REGION_1.value + databaseManager.showReconstructTable(commands[1]);
             sendMessage(socket, message);
             return "true";
@@ -86,7 +85,7 @@ public class RegionSocketManager implements Runnable {
     public String initiatingTableTransferring(String command) {
         String[] commands = command.split(" ");
         try {
-            Socket socket = connectToRegion(commands[0], 8082);
+            Socket socket = connectToRegion(commands[0]);
             String message = CommandHeader.REGION_TO_REGION_1.value + databaseManager.showReconstructTable(commands[1]);
             sendMessage(socket, message);
 
